@@ -1,0 +1,22 @@
+{
+  "name": "Cea Photobooth",
+  "short_name": "Cea Booth",
+  "description": "A floral-themed photobooth just for Cea 🌻",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#fef3c7",
+  "background_color": "#fefdfb",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
