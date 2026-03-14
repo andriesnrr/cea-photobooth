@@ -18,7 +18,7 @@ export interface Sticker {
 
 export type StickerType = 'sunflower' | 'rose' | 'peony' | 'heart' | 'sparkle';
 
-export type TemplateType = 'classic' | 'polaroid' | 'grid' | 'floral';
+export type TemplateType = 'classic' | 'polaroid' | 'grid' | 'floral' | 'story';
 
 export interface AppState {
   photos: Photo[];
@@ -70,4 +70,5 @@ export const TEMPLATE_LABELS: Record<TemplateType, string> = {
   polaroid: 'Polaroid',
   grid: 'Grid',
   floral: 'Floral Frame',
+  story: 'IG Story',
 };

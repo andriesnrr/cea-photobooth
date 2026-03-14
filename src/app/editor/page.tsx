@@ -64,9 +64,10 @@ export default function EditorPage() {
           </motion.button>
         </div>
 
-        {/* Editor area */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 py-4">
-          <div className="relative max-w-[280px] w-full">
+        {/* Editor area — portrait: stacked, landscape: side-by-side */}
+        <div className="flex-1 flex flex-col landscape:flex-row landscape:items-center landscape:gap-6 landscape:px-8 items-center justify-center px-6 py-4 landscape:py-0">
+          {/* Photostrip */}
+          <div className="relative max-w-[280px] landscape:max-w-[220px] w-full">
             {previewUrl && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -86,18 +87,28 @@ export default function EditorPage() {
             />
           </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-xs text-gray-400 mt-5 text-center glass-card px-4 py-2 rounded-full"
-          >
-            🌸 Tap to add • Drag to move • ✕ to remove
-          </motion.p>
+          {/* Controls panel — side panel in landscape */}
+          <div className="landscape:flex-1 landscape:max-w-sm landscape:flex landscape:flex-col landscape:gap-4">
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-xs text-gray-400 mt-5 landscape:mt-0 text-center glass-card px-4 py-2 rounded-full"
+            >
+              🌸 Tap to add • Drag to move • ✕ to remove
+            </motion.p>
+
+            {/* Done button — visible in landscape side panel */}
+            <div className="hidden landscape:block">
+              <Button onClick={handleDone} size="lg" className="w-full btn-gradient !rounded-2xl !py-4" icon="🎉">
+                See Result
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Done button */}
-        <div className="px-6 py-4 safe-bottom">
+        {/* Done button — portrait only (bottom) */}
+        <div className="px-6 py-4 safe-bottom landscape:hidden">
           <Button onClick={handleDone} size="lg" className="w-full btn-gradient !rounded-2xl !py-4" icon="🎉">
             See Result
           </Button>

@@ -62,61 +62,67 @@ export default function PreviewPage() {
           <div className="w-20" />
         </div>
 
-        {/* Photo strip preview */}
-        <div className="flex-1 flex items-center justify-center px-6 py-2">
-          {isRendering ? (
-            <div className="text-center">
-              <motion.div
-                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-                transition={{ rotate: { duration: 2, repeat: Infinity, ease: 'linear' }, scale: { duration: 1, repeat: Infinity } }}
-                className="text-5xl inline-block mb-4"
-              >
-                🌻
-              </motion.div>
-              <p className="text-gray-400 text-sm">Rendering your photostrip...</p>
-            </div>
-          ) : previewUrl ? (
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0, rotateZ: -2 }}
-              animate={{ scale: 1, opacity: 1, rotateZ: 0 }}
-              transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
-              className="max-w-[280px] w-full"
-            >
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-rose-200/40 ring-1 ring-white/50 ring-glow">
-                <img src={previewUrl} alt="Photostrip preview" className="w-full" />
+        {/* Main content — portrait: stacked, landscape: side-by-side */}
+        <div className="flex-1 flex flex-col landscape:flex-row landscape:items-center landscape:gap-8 landscape:px-8">
+          {/* Photo strip preview */}
+          <div className="flex-1 flex items-center justify-center px-6 py-2 landscape:px-0">
+            {isRendering ? (
+              <div className="text-center">
+                <motion.div
+                  animate={{ rotate: 360, scale: [1, 1.1, 1] }}
+                  transition={{ rotate: { duration: 2, repeat: Infinity, ease: 'linear' }, scale: { duration: 1, repeat: Infinity } }}
+                  className="text-5xl inline-block mb-4"
+                >
+                  🌻
+                </motion.div>
+                <p className="text-gray-400 text-sm">Rendering your photostrip...</p>
               </div>
-            </motion.div>
-          ) : null}
-        </div>
-
-        {/* Individual photos thumbnail strip */}
-        <div className="px-6 py-3">
-          <div className="flex gap-2 justify-center">
-            {state.photos.map((photo, i) => (
+            ) : previewUrl ? (
               <motion.div
-                key={photo.id}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-lg shadow-rose-100/30"
+                initial={{ scale: 0.85, opacity: 0, rotateZ: -2 }}
+                animate={{ scale: 1, opacity: 1, rotateZ: 0 }}
+                transition={{ duration: 0.5, type: 'spring', stiffness: 200 }}
+                className="max-w-[280px] landscape:max-w-[240px] w-full"
               >
-                <img src={photo.dataUrl} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                <div className="rounded-2xl overflow-hidden shadow-2xl shadow-rose-200/40 ring-1 ring-white/50 ring-glow">
+                  <img src={previewUrl} alt="Photostrip preview" className="w-full" />
+                </div>
               </motion.div>
-            ))}
+            ) : null}
           </div>
-        </div>
 
-        {/* Template selector */}
-        <div className="px-4 py-3">
-          <p className="text-xs text-gray-400 text-center mb-2 tracking-wide uppercase">Choose a template</p>
-          <TemplateSelector selected={state.selectedTemplate} onSelect={setTemplate} />
-        </div>
+          {/* Right panel (landscape) / bottom panel (portrait) */}
+          <div className="landscape:flex-1 landscape:max-w-sm">
+            {/* Individual photos thumbnail strip */}
+            <div className="px-6 py-3 landscape:px-0">
+              <div className="flex gap-2 justify-center">
+                {state.photos.map((photo, i) => (
+                  <motion.div
+                    key={photo.id}
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-lg shadow-rose-100/30"
+                  >
+                    <img src={photo.dataUrl} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
 
-        {/* Actions */}
-        <div className="px-6 py-4 safe-bottom">
-          <Button onClick={handleContinue} size="lg" className="w-full btn-gradient !rounded-2xl !py-4" icon="✏️">
-            Add Stickers
-          </Button>
+            {/* Template selector */}
+            <div className="px-4 py-3 landscape:px-0">
+              <p className="text-xs text-gray-400 text-center mb-2 tracking-wide uppercase">Choose a template</p>
+              <TemplateSelector selected={state.selectedTemplate} onSelect={setTemplate} />
+            </div>
+
+            {/* Actions */}
+            <div className="px-6 py-4 safe-bottom landscape:px-0">
+              <Button onClick={handleContinue} size="lg" className="w-full btn-gradient !rounded-2xl !py-4" icon="✏️">
+                Add Stickers
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </PageTransition>

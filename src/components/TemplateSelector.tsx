@@ -13,9 +13,10 @@ const TEMPLATE_PREVIEWS: Record<TemplateType, { icon: string; desc: string }> = 
   polaroid: { icon: '🖼️', desc: '1 large' },
   grid: { icon: '⬜', desc: '2×2 grid' },
   floral: { icon: '🌸', desc: 'Decorated' },
+  story: { icon: '📱', desc: '9:16 IG' },
 };
 
-const templates: TemplateType[] = ['classic', 'polaroid', 'grid', 'floral'];
+const templates: TemplateType[] = ['classic', 'polaroid', 'grid', 'floral', 'story'];
 
 export default function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {
   return (

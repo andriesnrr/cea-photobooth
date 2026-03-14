@@ -64,6 +64,21 @@ const TEMPLATES: Record<TemplateType, TemplateConfig> = {
     borderRadius: 16,
     padding: 40,
   },
+  // Instagram Story format: 9:16 ratio (1080x1920)
+  story: {
+    canvasWidth: 1080,
+    canvasHeight: 1920,
+    photoPositions: [
+      { x: 60, y: 180, width: 960, height: 360 },
+      { x: 60, y: 560, width: 960, height: 360 },
+      { x: 60, y: 940, width: 960, height: 360 },
+      { x: 60, y: 1320, width: 960, height: 360 },
+    ],
+    backgroundColor: '#fefdfb',
+    footerY: 1740,
+    borderRadius: 24,
+    padding: 60,
+  },
 };
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -115,6 +130,27 @@ function drawFloralDecorations(ctx: CanvasRenderingContext2D, template: Template
   ctx.fillText(flowers[0], template.canvasWidth - 25, midY);
 }
 
+function drawStoryDecorations(ctx: CanvasRenderingContext2D, config: TemplateConfig) {
+  const flowers = ['🌻', '🌹', '🌸', '🌷', '💐', '✨'];
+  const fontSize = 40;
+  ctx.font = `${fontSize}px serif`;
+
+  // Top decorations
+  ctx.fillText(flowers[0], 15, 55);
+  ctx.fillText(flowers[1], config.canvasWidth - 55, 55);
+  ctx.fillText(flowers[5], config.canvasWidth / 2 - 20, 60);
+
+  // Bottom decorations
+  ctx.fillText(flowers[2], 15, config.canvasHeight - 20);
+  ctx.fillText(flowers[3], config.canvasWidth - 55, config.canvasHeight - 20);
+
+  // Side decorations along photos
+  ctx.font = `${fontSize * 0.7}px serif`;
+  ctx.fillText(flowers[4], 10, 600);
+  ctx.fillText(flowers[5], config.canvasWidth - 40, 900);
+  ctx.fillText(flowers[0], 10, 1200);
+}
+
 export async function renderPhotostrip(
   photos: Photo[],
   template: TemplateType,
@@ -129,6 +165,9 @@ export async function renderPhotostrip(
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
+  // Scale factor for story template (larger canvas requires proportionally larger text)
+  const scaleFactor = template === 'story' ? 2.5 : 1;
+
   // 1. Draw background
   ctx.fillStyle = config.backgroundColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -140,6 +179,17 @@ export async function renderPhotostrip(
   gradient.addColorStop(1, 'rgba(254, 243, 199, 0.15)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Story template: add a top header area
+  if (template === 'story') {
+    // Gradient header band
+    const headerGrad = ctx.createLinearGradient(0, 0, config.canvasWidth, 160);
+    headerGrad.addColorStop(0, 'rgba(244, 63, 94, 0.08)');
+    headerGrad.addColorStop(0.5, 'rgba(236, 72, 153, 0.06)');
+    headerGrad.addColorStop(1, 'rgba(245, 158, 11, 0.08)');
+    ctx.fillStyle = headerGrad;
+    ctx.fillRect(0, 0, config.canvasWidth, 160);
+  }
 
   // 2. Draw photos
   const photosToRender = template === 'polaroid' ? [photos[0]] : photos;
@@ -153,9 +203,9 @@ export async function renderPhotostrip(
 
       // Draw photo shadow
       ctx.shadowColor = 'rgba(0, 0, 0, 0.08)';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 12 * scaleFactor;
       ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
+      ctx.shadowOffsetY = 4 * scaleFactor;
 
       // Clip rounded rectangle
       ctx.save();
@@ -201,26 +251,56 @@ export async function renderPhotostrip(
   // 4. Draw decorations
   if (template === 'floral') {
     drawFloralDecorations(ctx, config);
+  } else if (template === 'story') {
+    drawStoryDecorations(ctx, config);
   }
 
-  // 5. Draw footer
+  // 5. Try to load and draw the logo
+  let logoLoaded = false;
+  try {
+    const logo = await loadImage('/logo.png');
+    const logoSize = template === 'story' ? 60 : 28;
+    const logoX = canvas.width / 2 - logoSize / 2;
+    const logoY = config.footerY - (template === 'story' ? 8 : 5);
+    ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+    logoLoaded = true;
+  } catch {
+    // Logo not available, skip
+  }
+
+  // 6. Draw footer branding — "Cea Photobooth"
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-  // Footer text: "For Cea 🌻"
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
 
-  ctx.font = 'bold 22px "Dancing Script", cursive, serif';
+  const brandFontSize = Math.round(20 * scaleFactor);
+  const dateFontSize = Math.round(11 * scaleFactor);
+  const brandY = config.footerY + (logoLoaded ? (template === 'story' ? 55 : 24) : 0);
+
+  // Brand name — uses Outfit font (bold, clean)
+  ctx.font = `700 ${brandFontSize}px "Outfit", "Helvetica Neue", Arial, sans-serif`;
+  // Gradient text simulation: rose color
   ctx.fillStyle = '#f43f5e';
-  ctx.fillText('For Cea 🌻', canvas.width / 2, config.footerY);
+  ctx.fillText('Cea Photobooth', canvas.width / 2, brandY);
 
-  ctx.font = '12px "Outfit", sans-serif';
+  // Sunflower accent
+  ctx.font = `${brandFontSize}px serif`;
+  const brandTextWidth = ctx.measureText('Cea Photobooth').width;
+  // We already measured with serif, re-measure with Outfit
+  ctx.font = `700 ${brandFontSize}px "Outfit", "Helvetica Neue", Arial, sans-serif`;
+  const actualWidth = ctx.measureText('Cea Photobooth').width;
+  ctx.font = `${Math.round(brandFontSize * 0.9)}px serif`;
+  ctx.fillText('🌻', canvas.width / 2 + actualWidth / 2 + 5, brandY);
+
+  // Date/time
+  ctx.font = `${dateFontSize}px "Outfit", "Helvetica Neue", Arial, sans-serif`;
   ctx.fillStyle = '#9ca3af';
-  ctx.fillText(`${dateStr} • ${timeStr}`, canvas.width / 2, config.footerY + 35);
+  ctx.fillText(`${dateStr} • ${timeStr}`, canvas.width / 2, brandY + brandFontSize + 8);
 
-  // 6. Export PNG
+  // 7. Export PNG
   return canvas.toDataURL('image/png');
 }
 

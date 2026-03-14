@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCamera } from '@/hooks/useCamera';
 import { usePhotoCapture } from '@/hooks/usePhotoCapture';
@@ -76,7 +76,7 @@ export default function PhotoboothPage() {
   }[state.selectedFilter];
 
   return (
-    <div className="min-h-dvh bg-black flex flex-col relative overflow-hidden">
+    <div className="min-h-dvh bg-black flex flex-col landscape:flex-row relative overflow-hidden">
       {/* Camera viewport */}
       <div className="flex-1 relative overflow-hidden">
         {/* Decorative frame border */}
@@ -172,8 +172,8 @@ export default function PhotoboothPage() {
         )}
       </div>
 
-      {/* Bottom controls */}
-      <div className="relative bg-gradient-to-t from-black via-black/95 to-black/70 safe-bottom">
+      {/* Bottom controls — becomes side panel in landscape */}
+      <div className="relative bg-gradient-to-t from-black via-black/95 to-black/70 safe-bottom landscape:bg-gradient-to-l landscape:from-black landscape:via-black/95 landscape:to-black/70 landscape:w-28 landscape:flex landscape:flex-col landscape:justify-center landscape:items-center landscape:py-6">
         {/* Filter selector */}
         <AnimatePresence>
           {!isCapturing && isCameraReady && (
@@ -181,7 +181,7 @@ export default function PhotoboothPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="py-3"
+              className="py-3 landscape:py-2 landscape:hidden"
             >
               <FilterSelector selected={state.selectedFilter} onSelect={setFilter} />
             </motion.div>
@@ -189,7 +189,7 @@ export default function PhotoboothPage() {
         </AnimatePresence>
 
         {/* Action buttons */}
-        <div className="flex items-center justify-center gap-8 py-5 px-6">
+        <div className="flex items-center justify-center gap-8 landscape:gap-5 py-5 landscape:py-0 px-6 landscape:px-0 landscape:flex-col">
           {/* Back / Cancel */}
           <motion.button
             whileTap={{ scale: 0.85 }}
@@ -201,7 +201,7 @@ export default function PhotoboothPage() {
                 router.push('/');
               }
             }}
-            className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center cursor-pointer text-lg border border-white/10 hover:bg-white/20 transition-colors"
+            className="w-14 h-14 landscape:w-12 landscape:h-12 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center cursor-pointer text-lg border border-white/10 hover:bg-white/20 transition-colors"
           >
             {isCapturing ? '✕' : '←'}
           </motion.button>
@@ -213,13 +213,13 @@ export default function PhotoboothPage() {
               whileTap={{ scale: 0.9 }}
               onClick={startSession}
               disabled={!isCameraReady}
-              className="relative w-24 h-24 rounded-full disabled:opacity-50 cursor-pointer group"
+              className="relative w-24 h-24 landscape:w-20 landscape:h-20 rounded-full disabled:opacity-50 cursor-pointer group"
             >
               {/* Outer ring */}
               <div className="absolute inset-0 rounded-full border-[3px] border-white/40 group-hover:border-white/60 transition-colors" />
               {/* Inner gradient */}
               <div className="absolute inset-2 rounded-full bg-gradient-to-br from-rose-400 via-pink-400 to-amber-400 shadow-lg shadow-rose-500/30 flex items-center justify-center">
-                <span className="text-3xl">📸</span>
+                <span className="text-3xl landscape:text-2xl">📸</span>
               </div>
               {/* Glow */}
               <motion.div
@@ -229,13 +229,13 @@ export default function PhotoboothPage() {
               />
             </motion.button>
           ) : (
-            <div className="relative w-24 h-24 rounded-full flex items-center justify-center">
+            <div className="relative w-24 h-24 landscape:w-20 landscape:h-20 rounded-full flex items-center justify-center">
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 className="absolute inset-0 rounded-full bg-red-500/20 blur-md"
               />
-              <div className="w-20 h-20 rounded-full bg-red-500/80 backdrop-blur-sm flex items-center justify-center border-2 border-red-400/50">
+              <div className="w-20 h-20 landscape:w-16 landscape:h-16 rounded-full bg-red-500/80 backdrop-blur-sm flex items-center justify-center border-2 border-red-400/50">
                 <div className="w-4 h-4 rounded-sm bg-white animate-pulse" />
               </div>
             </div>
@@ -246,7 +246,7 @@ export default function PhotoboothPage() {
             whileTap={{ scale: 0.85 }}
             onClick={flipCamera}
             disabled={isCapturing}
-            className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center cursor-pointer text-lg border border-white/10 disabled:opacity-50 hover:bg-white/20 transition-colors"
+            className="w-14 h-14 landscape:w-12 landscape:h-12 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center cursor-pointer text-lg border border-white/10 disabled:opacity-50 hover:bg-white/20 transition-colors"
           >
             🔄
           </motion.button>

@@ -61,7 +61,7 @@ export default function LandingPage() {
               repeat: Infinity,
               ease: 'easeInOut',
             }}
-            className="text-8xl mb-6 drop-shadow-lg"
+            className="text-8xl landscape:text-6xl mb-6 landscape:mb-3 drop-shadow-lg"
           >
             🌻
           </motion.div>
@@ -71,7 +71,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="text-6xl font-bold font-[family-name:var(--font-dancing)] text-gradient-floral mb-3 text-shadow-soft underline-glow"
+            className="text-6xl landscape:text-4xl font-bold font-[family-name:var(--font-dancing)] text-gradient-floral mb-3 landscape:mb-1 text-shadow-soft underline-glow"
           >
             Cea Photobooth
           </motion.h1>
@@ -80,7 +80,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="text-lg text-gray-500 font-light mb-12 tracking-wide"
+            className="text-lg landscape:text-base text-gray-500 font-light mb-12 landscape:mb-6 tracking-wide"
           >
             A little photobooth, just for you ✨
           </motion.p>
@@ -143,7 +143,7 @@ export default function LandingPage() {
           transition={{ delay: 1.2 }}
           className="absolute bottom-16 text-xs text-gray-400 tracking-wider"
         >
-          Made with 💖 for Cea
+          Made with 💖 • Cea Photobooth
         </motion.div>
       </div>
     </PageTransition>
