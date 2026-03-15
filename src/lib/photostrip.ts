@@ -577,17 +577,17 @@ function drawLeaf(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: n
 }
 
 function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: number, positions: { x: number; y: number; width: number; height: number }[]) {
-  // Golden double border around the whole frame
+  // Golden double border
   ctx.strokeStyle = '#d97706';
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 5;
   drawRoundedRect(ctx, 2, 2, w - 4, h - 4, 14);
   ctx.stroke();
   ctx.strokeStyle = '#fbbf24';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   drawRoundedRect(ctx, 6, 6, w - 12, h - 12, 12);
   ctx.stroke();
 
-  // Golden lines between each photo (the dividers)
+  // Golden divider lines between photos
   ctx.strokeStyle = '#d97706';
   ctx.lineWidth = 3;
   for (let i = 0; i < positions.length - 1; i++) {
@@ -602,81 +602,43 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
     }
   }
 
-  // Use width as base so flowers are proportional to the frame
-  const big = w * 0.18;   // ~72px on 400px strip
-  const med = w * 0.13;   // ~52px
-  const sm = w * 0.09;    // ~36px
+  const big = w * 0.16;
+  const med = w * 0.12;
 
-  // ===== BOTTOM CLUSTER — dense row of sunflowers (like the reference) =====
-  drawSunflowerCanvas(ctx, w * 0.08, h - 10, big);         // bottom-left main
-  drawSunflowerCanvas(ctx, w * 0.28, h - 5, med);          // next to main
-  drawSunflowerCanvas(ctx, w * 0.45, h - 12, sm);          // center-bottom  
-  drawSunflowerCanvas(ctx, w * 0.62, h - 6, med);          // right of center
-  drawSunflowerCanvas(ctx, w * 0.80, h - 8, big * 0.85);   // bottom-right cluster
-  drawSunflowerCanvas(ctx, w * 0.95, h - 12, sm);          // far right
-  // Leaves in between bottom sunflowers
-  drawLeaf(ctx, w * 0.18, h - 25, 22, -0.3);
-  drawLeaf(ctx, w * 0.35, h - 20, 18, 0.5);
-  drawLeaf(ctx, w * 0.55, h - 22, 20, 3.0);
-  drawLeaf(ctx, w * 0.72, h - 18, 16, 2.5);
-  drawLeaf(ctx, w * 0.88, h - 25, 18, -0.5);
-
-  // ===== TOP — sunflowers along top edge =====
-  drawSunflowerCanvas(ctx, w * 0.10, 8, med);              // top-left
-  drawSunflowerCanvas(ctx, w * 0.90, 8, med * 0.8);        // top-right
-  drawLeaf(ctx, w * 0.25, 6, 16, 0.3);
-  drawLeaf(ctx, w * 0.75, 6, 16, 2.8);
-
-  // ===== LEFT EDGE — sunflowers along left side =====
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i];
-    const cy = pos.y + pos.height * 0.5;
-    // Alternate sizes
-    const sz = i % 2 === 0 ? med : sm;
-    drawSunflowerCanvas(ctx, 5, cy, sz);
-    drawLeaf(ctx, 5, cy - sz * 0.8, 14, 0.6);
-    drawLeaf(ctx, 5, cy + sz * 0.8, 14, -0.4);
-  }
-
-  // ===== RIGHT EDGE — sunflowers along right side =====
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i];
-    const cy = pos.y + pos.height * 0.5;
-    const sz = i % 2 === 0 ? sm : med;
-    drawSunflowerCanvas(ctx, w - 5, cy, sz);
-    drawLeaf(ctx, w - 5, cy - sz * 0.7, 14, 2.5);
-    drawLeaf(ctx, w - 5, cy + sz * 0.7, 14, 3.5);
-  }
-
-  // ===== DIVIDER LINES — sunflowers at each gap between photos =====
+  // ===== Alternating LEFT-RIGHT sunflowers at each divider =====
   for (let i = 0; i < positions.length - 1; i++) {
     const curr = positions[i];
     const next = positions[i + 1];
     const gapY = curr.y + curr.height + (next.y - (curr.y + curr.height)) / 2;
 
     if (Math.abs(curr.x - next.x) < 10) {
-      // Vertical strip — sunflowers on both sides of divider + center
-      drawSunflowerCanvas(ctx, curr.x - 3, gapY, med);
-      drawSunflowerCanvas(ctx, curr.x + curr.width + 3, gapY, sm);
-      // Small one near center of divider
-      drawSunflowerCanvas(ctx, curr.x + curr.width * 0.5, gapY, sm * 0.7);
-      drawLeaf(ctx, curr.x + curr.width * 0.25, gapY, 16, 0.3);
-      drawLeaf(ctx, curr.x + curr.width * 0.75, gapY, 16, 2.8);
+      // Alternate: even = left side, odd = right side
+      if (i % 2 === 0) {
+        drawSunflowerCanvas(ctx, 5, gapY, med);
+        drawLeaf(ctx, 5, gapY - med * 0.9, 16, 0.5);
+        drawLeaf(ctx, 5, gapY + med * 0.9, 16, -0.4);
+      } else {
+        drawSunflowerCanvas(ctx, w - 5, gapY, med);
+        drawLeaf(ctx, w - 5, gapY - med * 0.9, 16, 2.6);
+        drawLeaf(ctx, w - 5, gapY + med * 0.9, 16, 3.5);
+      }
     } else {
       const gapX = curr.x + curr.width + (next.x - (curr.x + curr.width)) / 2;
-      drawSunflowerCanvas(ctx, gapX, curr.y + curr.height * 0.3, med * 0.8);
-      drawSunflowerCanvas(ctx, gapX, curr.y + curr.height * 0.7, sm);
+      drawSunflowerCanvas(ctx, gapX, curr.y + curr.height * 0.5, med);
     }
   }
 
-  // ===== Extra leaves along edges for lush feel =====
-  for (let y = 30; y < h - 50; y += h * 0.12) {
-    drawLeaf(ctx, 3, y, 12 + Math.random() * 8, 0.3 + Math.sin(y * 0.01) * 0.5);
-    drawLeaf(ctx, w - 3, y + 15, 12 + Math.random() * 8, 2.7 + Math.sin(y * 0.01) * 0.5);
-  }
+  // ===== Bottom — 3 balanced sunflowers =====
+  drawSunflowerCanvas(ctx, w * 0.12, h - 10, big);
+  drawSunflowerCanvas(ctx, w * 0.50, h - 8, med);
+  drawSunflowerCanvas(ctx, w * 0.88, h - 10, big);
+  drawLeaf(ctx, w * 0.28, h - 18, 18, 0.4);
+  drawLeaf(ctx, w * 0.72, h - 18, 18, 2.7);
 
-  // ===== Ribbon bow — top-left (like reference) =====
-  drawRibbon(ctx, w * 0.12, 15, big * 0.5);
+  // ===== Top — ribbon + small sunflower =====
+  drawRibbon(ctx, w * 0.12, 16, big * 0.4);
+  drawSunflowerCanvas(ctx, w * 0.88, 10, med * 0.7);
+  drawLeaf(ctx, w * 0.75, 8, 14, 2.8);
 }
 
 function drawRibbon(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
