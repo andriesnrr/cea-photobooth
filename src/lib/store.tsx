@@ -5,6 +5,7 @@ import { AppState, Photo, Sticker, FilterType, TemplateType } from './types';
 
 type Action =
   | { type: 'ADD_PHOTO'; photo: Photo }
+  | { type: 'REPLACE_PHOTO'; index: number; photo: Photo }
   | { type: 'CLEAR_PHOTOS' }
   | { type: 'SET_FILTER'; filter: FilterType }
   | { type: 'SET_TEMPLATE'; template: TemplateType }
@@ -38,6 +39,11 @@ function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'ADD_PHOTO':
       return { ...state, photos: [...state.photos, action.photo] };
+    case 'REPLACE_PHOTO': {
+      const newPhotos = [...state.photos];
+      newPhotos[action.index] = action.photo;
+      return { ...state, photos: newPhotos };
+    }
     case 'CLEAR_PHOTOS':
       return { ...state, photos: [] };
     case 'SET_FILTER':
@@ -86,6 +92,7 @@ interface StoreContextType {
   state: AppState;
   dispatch: React.Dispatch<Action>;
   addPhoto: (photo: Photo) => void;
+  replacePhoto: (index: number, photo: Photo) => void;
   clearPhotos: () => void;
   setFilter: (filter: FilterType) => void;
   setTemplate: (template: TemplateType) => void;
@@ -131,6 +138,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [state.sessionCount, mounted]);
 
   const addPhoto = useCallback((photo: Photo) => dispatch({ type: 'ADD_PHOTO', photo }), []);
+  const replacePhoto = useCallback((index: number, photo: Photo) => dispatch({ type: 'REPLACE_PHOTO', index, photo }), []);
   const clearPhotos = useCallback(() => dispatch({ type: 'CLEAR_PHOTOS' }), []);
   const setFilter = useCallback((filter: FilterType) => dispatch({ type: 'SET_FILTER', filter }), []);
   const setTemplate = useCallback((template: TemplateType) => dispatch({ type: 'SET_TEMPLATE', template }), []);
@@ -153,7 +161,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   return (
     <StoreContext.Provider value={{
       state, dispatch,
-      addPhoto, clearPhotos, setFilter, setTemplate,
+      addPhoto, replacePhoto, clearPhotos, setFilter, setTemplate,
       addSticker, updateSticker, removeSticker, clearStickers,
       setPhotostrip, newSession, toggleSound,
     }}>
