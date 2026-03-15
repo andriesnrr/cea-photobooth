@@ -8,7 +8,7 @@ interface LayoutSelectorProps {
   onSelect: (layout: LayoutType) => void;
 }
 
-const layouts: LayoutType[] = ['strip-4', 'strip-3', 'strip-2', 'grid-2x2', 'grid-3x2', 'story', 'polaroid'];
+const layouts: LayoutType[] = ['strip-4', 'strip-3', 'strip-2', 'grid-2x2', 'grid-3x2', 'story', 'polaroid', 'wide', 'tall-2'];
 
 export default function LayoutSelector({ selected, onSelect }: LayoutSelectorProps) {
   return (

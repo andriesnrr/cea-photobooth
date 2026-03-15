@@ -98,6 +98,29 @@ const LAYOUTS: Record<LayoutType, LayoutConfig> = {
     borderRadius: 0,
     padding: 25,
   },
+  'wide': {
+    canvasWidth: 1200,
+    canvasHeight: 480,
+    getPhotoPositions: () => [
+      { x: 15, y: 15, width: 380, height: 350 },
+      { x: 410, y: 15, width: 380, height: 350 },
+      { x: 805, y: 15, width: 380, height: 350 },
+    ],
+    footerY: 380,
+    borderRadius: 10,
+    padding: 15,
+  },
+  'tall-2': {
+    canvasWidth: 400,
+    canvasHeight: 1100,
+    getPhotoPositions: () => [
+      { x: 20, y: 20, width: 360, height: 480 },
+      { x: 20, y: 520, width: 360, height: 480 },
+    ],
+    footerY: 1020,
+    borderRadius: 12,
+    padding: 20,
+  },
 };
 
 // ====== Helper functions ======
@@ -322,6 +345,152 @@ function drawDoodleDecorations(ctx: CanvasRenderingContext2D, w: number, h: numb
   ctx.setLineDash([]);
 }
 
+// ====== New Frame Style Decorations ======
+
+function drawSparkleDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  const sparkles = ['✨', '💫', '⭐', '🌟', '💎', '✧', '★'];
+  const positions = [
+    { x: 5, y: 25, size: 16 }, { x: w - 22, y: 25, size: 16 },
+    { x: w / 2, y: 20, size: 18 },
+    { x: 8, y: h * 0.3, size: 12 }, { x: w - 18, y: h * 0.35, size: 12 },
+    { x: 5, y: h * 0.55, size: 14 }, { x: w - 20, y: h * 0.6, size: 14 },
+    { x: 10, y: h * 0.8, size: 12 }, { x: w - 18, y: h * 0.85, size: 12 },
+    { x: w / 2 - 30, y: h - 15, size: 14 }, { x: w / 2 + 25, y: h - 15, size: 14 },
+    { x: 40, y: h * 0.15, size: 10 }, { x: w - 45, y: h * 0.45, size: 10 },
+  ];
+  positions.forEach((pos, i) => {
+    ctx.font = `${pos.size}px serif`;
+    ctx.fillText(sparkles[i % sparkles.length], pos.x, pos.y);
+  });
+  // Glitter dots
+  ctx.fillStyle = 'rgba(251, 191, 36, 0.12)';
+  for (let i = 0; i < 60; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const r = Math.random() * 2 + 0.5;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawSakuraDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  const petals = ['🌸', '🏵️', '💮', '🌺'];
+  const positions = [
+    { x: 3, y: 28, size: 20 }, { x: w - 26, y: 28, size: 20 },
+    { x: w / 2 - 8, y: 22, size: 18 },
+    { x: 5, y: h * 0.2, size: 14 }, { x: w - 20, y: h * 0.25, size: 14 },
+    { x: 8, y: h * 0.4, size: 12 }, { x: w - 18, y: h * 0.45, size: 12 },
+    { x: 5, y: h * 0.6, size: 14 }, { x: w - 20, y: h * 0.65, size: 14 },
+    { x: 8, y: h * 0.8, size: 12 }, { x: w - 18, y: h * 0.82, size: 12 },
+    { x: 15, y: h - 15, size: 16 }, { x: w - 30, y: h - 15, size: 16 },
+    // falling petals
+    { x: 50, y: h * 0.12, size: 10 }, { x: w - 60, y: h * 0.38, size: 10 },
+    { x: 70, y: h * 0.58, size: 10 }, { x: w - 50, y: h * 0.72, size: 10 },
+  ];
+  positions.forEach((pos, i) => {
+    ctx.font = `${pos.size}px serif`;
+    ctx.fillText(petals[i % petals.length], pos.x, pos.y);
+  });
+  // Petal circles
+  ctx.fillStyle = 'rgba(244, 114, 182, 0.06)';
+  for (let i = 0; i < 15; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.random() * 15 + 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawConfettiDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  const confettiColors = [
+    'rgba(244, 63, 94, 0.3)', 'rgba(59, 130, 246, 0.3)',
+    'rgba(251, 191, 36, 0.3)', 'rgba(34, 197, 94, 0.3)',
+    'rgba(168, 85, 247, 0.3)', 'rgba(251, 146, 60, 0.3)',
+  ];
+  // Scattered confetti rectangles
+  for (let i = 0; i < 40; i++) {
+    ctx.save();
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    ctx.translate(x, y);
+    ctx.rotate(Math.random() * Math.PI);
+    ctx.fillStyle = confettiColors[i % confettiColors.length];
+    ctx.fillRect(-4, -1.5, 8, 3);
+    ctx.restore();
+  }
+  // Party emojis
+  const party = ['🎉', '🎊', '🥳', '🎈', '🎁', '🎵'];
+  [
+    { x: 3, y: 25 }, { x: w - 22, y: 25 },
+    { x: 5, y: h * 0.5 }, { x: w - 22, y: h * 0.5 },
+    { x: 10, y: h - 15 }, { x: w - 25, y: h - 15 },
+  ].forEach((pos, i) => {
+    ctx.font = '16px serif';
+    ctx.fillText(party[i], pos.x, pos.y);
+  });
+}
+
+function drawRetroDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  // Retro halftone dots
+  ctx.fillStyle = 'rgba(180, 120, 80, 0.06)';
+  for (let x = 0; x < w; x += 20) {
+    for (let y = 0; y < h; y += 20) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  // Retro border: double line
+  ctx.strokeStyle = 'rgba(180, 120, 80, 0.15)';
+  ctx.lineWidth = 2;
+  drawRoundedRect(ctx, 6, 6, w - 12, h - 12, 12);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  drawRoundedRect(ctx, 10, 10, w - 20, h - 20, 10);
+  ctx.stroke();
+  // Vintage corner ornaments 
+  const corners = ['❋', '❋', '❋', '❋'];
+  ctx.font = '14px serif';
+  ctx.fillStyle = 'rgba(180, 120, 80, 0.25)';
+  ctx.fillText(corners[0], 4, 18);
+  ctx.fillText(corners[1], w - 16, 18);
+  ctx.fillText(corners[2], 4, h - 6);
+  ctx.fillText(corners[3], w - 16, h - 6);
+}
+
+function drawStarryDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  // Stars scattered
+  const stars = ['⭐', '🌟', '✨', '💫', '🌙', '🌠'];
+  const positions = [
+    { x: 5, y: 25, size: 16 }, { x: w - 22, y: 25, size: 16 },
+    { x: w / 2, y: 18, size: 18 },
+    { x: 8, y: h * 0.3, size: 12 }, { x: w - 18, y: h * 0.35, size: 14 },
+    { x: 5, y: h * 0.55, size: 14 }, { x: w - 20, y: h * 0.6, size: 12 },
+    { x: 10, y: h * 0.8, size: 12 }, { x: w - 18, y: h * 0.85, size: 12 },
+    { x: w / 2 + 30, y: h - 12, size: 14 }, { x: w / 2 - 35, y: h - 12, size: 14 },
+  ];
+  positions.forEach((pos, i) => {
+    ctx.font = `${pos.size}px serif`;
+    ctx.fillText(stars[i % stars.length], pos.x, pos.y);
+  });
+  // Tiny star dots
+  ctx.fillStyle = 'rgba(253, 230, 138, 0.15)';
+  for (let i = 0; i < 50; i++) {
+    ctx.beginPath();
+    ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 1.5 + 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // Glowing border
+  ctx.strokeStyle = 'rgba(253, 230, 138, 0.15)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([3, 6]);
+  drawRoundedRect(ctx, 6, 6, w - 12, h - 12, 18);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
 // ====== Background rendering per frame style ======
 
 function drawFrameBackground(ctx: CanvasRenderingContext2D, style: FrameStyle, w: number, h: number, baseColor: string) {
@@ -351,7 +520,6 @@ function drawFrameBackground(ctx: CanvasRenderingContext2D, style: FrameStyle, w
       break;
     }
     case 'filmstrip': {
-      // Grain effect
       ctx.fillStyle = 'rgba(255,255,255,0.02)';
       for (let i = 0; i < 200; i++) {
         ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
@@ -368,13 +536,52 @@ function drawFrameBackground(ctx: CanvasRenderingContext2D, style: FrameStyle, w
       break;
     }
     case 'doodle': {
-      // Subtle paper texture
       ctx.fillStyle = 'rgba(245, 240, 230, 0.3)';
       ctx.fillRect(0, 0, w, h);
       break;
     }
+    case 'sparkle': {
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, 'rgba(253, 230, 138, 0.15)');
+      grad.addColorStop(0.5, 'rgba(252, 231, 243, 0.1)');
+      grad.addColorStop(1, 'rgba(253, 230, 138, 0.15)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'sakura': {
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(252, 231, 243, 0.4)');
+      grad.addColorStop(0.5, 'rgba(255, 228, 230, 0.2)');
+      grad.addColorStop(1, 'rgba(252, 231, 243, 0.4)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'confetti': {
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, 'rgba(254, 249, 195, 0.2)');
+      grad.addColorStop(0.5, 'rgba(219, 234, 254, 0.15)');
+      grad.addColorStop(1, 'rgba(252, 231, 243, 0.2)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'retro': {
+      ctx.fillStyle = 'rgba(245, 235, 220, 0.3)';
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'starry': {
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(30, 41, 59, 0.06)');
+      grad.addColorStop(0.5, 'rgba(49, 46, 129, 0.04)');
+      grad.addColorStop(1, 'rgba(30, 41, 59, 0.06)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
     default: {
-      // Clean/floral: subtle gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, h);
       gradient.addColorStop(0, 'rgba(254, 243, 199, 0.1)');
       gradient.addColorStop(0.5, 'rgba(252, 231, 243, 0.08)');
@@ -486,6 +693,11 @@ export async function renderPhotostrip(
     case 'filmstrip': drawFilmstripDecorations(ctx, w, h, photoPositions); break;
     case 'kawaii': drawKawaiiDecorations(ctx, w, h); break;
     case 'doodle': drawDoodleDecorations(ctx, w, h); break;
+    case 'sparkle': drawSparkleDecorations(ctx, w, h); break;
+    case 'sakura': drawSakuraDecorations(ctx, w, h); break;
+    case 'confetti': drawConfettiDecorations(ctx, w, h); break;
+    case 'retro': drawRetroDecorations(ctx, w, h); break;
+    case 'starry': drawStarryDecorations(ctx, w, h); break;
     case 'clean': drawCleanDecorations(ctx, w, h); break;
   }
 

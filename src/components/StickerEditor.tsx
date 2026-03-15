@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sticker, StickerType, STICKER_EMOJIS } from '@/lib/types';
+import { Sticker, StickerType, STICKER_EMOJIS, STICKER_CATEGORIES } from '@/lib/types';
 
 interface StickerEditorProps {
   stickers: Sticker[];
@@ -13,8 +13,6 @@ interface StickerEditorProps {
   canvasHeight: number;
 }
 
-const STICKER_TYPES: StickerType[] = ['sunflower', 'rose', 'peony', 'heart', 'sparkle'];
-
 export default function StickerEditor({
   stickers,
   onAddSticker,
@@ -24,8 +22,8 @@ export default function StickerEditor({
   canvasHeight,
 }: StickerEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState(0);
 
   const handleAddSticker = useCallback((type: StickerType) => {
     const newSticker: Sticker = {
@@ -49,7 +47,6 @@ export default function StickerEditor({
       const sticker = stickers.find((s) => s.id === stickerId);
       if (!sticker) return;
 
-      // Scale to canvas coordinates
       const scaleX = canvasWidth / rect.width;
       const scaleY = canvasHeight / rect.height;
       
@@ -61,10 +58,11 @@ export default function StickerEditor({
         x: Math.max(0, Math.min(canvasWidth, x)),
         y: Math.max(0, Math.min(canvasHeight, y)),
       });
-
     },
     [stickers, canvasWidth, canvasHeight, onUpdateSticker]
   );
+
+  const currentCategory = STICKER_CATEGORIES[activeCategory];
 
   return (
     <div className="relative w-full">
@@ -124,16 +122,36 @@ export default function StickerEditor({
         </AnimatePresence>
       </div>
 
-      {/* Sticker palette */}
-      <div className="mt-4">
-        <div className="flex gap-3 justify-center">
-          {STICKER_TYPES.map((type) => (
+      {/* Sticker palette with categories */}
+      <div className="mt-4 space-y-2">
+        {/* Category tabs */}
+        <div className="flex gap-1.5 justify-center">
+          {STICKER_CATEGORIES.map((cat, i) => (
+            <motion.button
+              key={cat.name}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setActiveCategory(i)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all flex items-center gap-1 ${
+                activeCategory === i
+                  ? 'bg-gradient-to-r from-rose-400 to-pink-400 text-white shadow-md shadow-rose-200/50'
+                  : 'bg-white/50 text-gray-500 hover:bg-white/70'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.name}</span>
+            </motion.button>
+          ))}
+        </div>
+
+        {/* Sticker grid for active category */}
+        <div className="flex flex-wrap gap-2 justify-center px-2">
+          {currentCategory.types.map((type) => (
             <motion.button
               key={type}
               whileHover={{ scale: 1.15 }}
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.85 }}
               onClick={() => handleAddSticker(type)}
-              className="w-12 h-12 rounded-xl glass flex items-center justify-center text-2xl cursor-pointer hover:shadow-lg transition-shadow"
+              className="w-11 h-11 rounded-xl glass flex items-center justify-center text-2xl cursor-pointer hover:shadow-lg transition-shadow"
             >
               {STICKER_EMOJIS[type]}
             </motion.button>
