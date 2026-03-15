@@ -629,13 +629,12 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
     }
   }
 
-  // ===== Bottom — 3 balanced sunflowers (moved up so not clipped) =====
-  const botY = h - big - 5;
-  drawSunflowerCanvas(ctx, w * 0.15, botY, big);
-  drawSunflowerCanvas(ctx, w * 0.50, botY + 4, med);
-  drawSunflowerCanvas(ctx, w * 0.85, botY, big);
-  drawLeaf(ctx, w * 0.30, botY, 18, 0.4);
-  drawLeaf(ctx, w * 0.70, botY, 18, 2.7);
+  // ===== Bottom — sunflowers at the edge (partially behind footer) =====
+  drawSunflowerCanvas(ctx, w * 0.12, h - 10, med);
+  drawSunflowerCanvas(ctx, w * 0.50, h - 8, med * 0.8);
+  drawSunflowerCanvas(ctx, w * 0.88, h - 10, med);
+  drawLeaf(ctx, w * 0.28, h - 18, 16, 0.4);
+  drawLeaf(ctx, w * 0.72, h - 18, 16, 2.7);
 
   // ===== Top — ribbon + small sunflower =====
   const topSz = med * 0.7;
