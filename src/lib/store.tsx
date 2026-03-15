@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useState } from 'react';
-import { AppState, Photo, Sticker, FilterType, TemplateType } from './types';
+import { AppState, Photo, Sticker, FilterType, TemplateType, LayoutType, FrameStyle } from './types';
 
 type Action =
   | { type: 'ADD_PHOTO'; photo: Photo }
@@ -9,6 +9,9 @@ type Action =
   | { type: 'CLEAR_PHOTOS' }
   | { type: 'SET_FILTER'; filter: FilterType }
   | { type: 'SET_TEMPLATE'; template: TemplateType }
+  | { type: 'SET_LAYOUT'; layout: LayoutType }
+  | { type: 'SET_FRAME_STYLE'; style: FrameStyle }
+  | { type: 'SET_FRAME_COLOR'; color: string }
   | { type: 'ADD_STICKER'; sticker: Sticker }
   | { type: 'UPDATE_STICKER'; sticker: Sticker }
   | { type: 'REMOVE_STICKER'; id: string }
@@ -26,6 +29,9 @@ function generateId(): string {
 // Use a fixed session ID for initial state to avoid hydration mismatch
 const initialState: AppState = {
   photos: [],
+  selectedLayout: 'strip-4',
+  selectedFrameStyle: 'clean',
+  frameColor: '#fefdfb',
   selectedTemplate: 'classic',
   selectedFilter: 'normal',
   stickers: [],
@@ -50,6 +56,12 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, selectedFilter: action.filter };
     case 'SET_TEMPLATE':
       return { ...state, selectedTemplate: action.template };
+    case 'SET_LAYOUT':
+      return { ...state, selectedLayout: action.layout };
+    case 'SET_FRAME_STYLE':
+      return { ...state, selectedFrameStyle: action.style };
+    case 'SET_FRAME_COLOR':
+      return { ...state, frameColor: action.color };
     case 'ADD_STICKER':
       return { ...state, stickers: [...state.stickers, action.sticker] };
     case 'UPDATE_STICKER':
@@ -96,6 +108,9 @@ interface StoreContextType {
   clearPhotos: () => void;
   setFilter: (filter: FilterType) => void;
   setTemplate: (template: TemplateType) => void;
+  setLayout: (layout: LayoutType) => void;
+  setFrameStyle: (style: FrameStyle) => void;
+  setFrameColor: (color: string) => void;
   addSticker: (sticker: Sticker) => void;
   updateSticker: (sticker: Sticker) => void;
   removeSticker: (id: string) => void;
@@ -142,6 +157,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const clearPhotos = useCallback(() => dispatch({ type: 'CLEAR_PHOTOS' }), []);
   const setFilter = useCallback((filter: FilterType) => dispatch({ type: 'SET_FILTER', filter }), []);
   const setTemplate = useCallback((template: TemplateType) => dispatch({ type: 'SET_TEMPLATE', template }), []);
+  const setLayout = useCallback((layout: LayoutType) => dispatch({ type: 'SET_LAYOUT', layout }), []);
+  const setFrameStyle = useCallback((style: FrameStyle) => dispatch({ type: 'SET_FRAME_STYLE', style }), []);
+  const setFrameColor = useCallback((color: string) => dispatch({ type: 'SET_FRAME_COLOR', color }), []);
   const addSticker = useCallback((sticker: Sticker) => dispatch({ type: 'ADD_STICKER', sticker }), []);
   const updateSticker = useCallback((sticker: Sticker) => dispatch({ type: 'UPDATE_STICKER', sticker }), []);
   const removeSticker = useCallback((id: string) => dispatch({ type: 'REMOVE_STICKER', id }), []);
@@ -162,6 +180,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     <StoreContext.Provider value={{
       state, dispatch,
       addPhoto, replacePhoto, clearPhotos, setFilter, setTemplate,
+      setLayout, setFrameStyle, setFrameColor,
       addSticker, updateSticker, removeSticker, clearStickers,
       setPhotostrip, newSession, toggleSound,
     }}>

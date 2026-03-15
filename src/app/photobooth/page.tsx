@@ -12,7 +12,7 @@ import PoseGuide from '@/components/PoseGuide';
 import FlashEffect from '@/components/FlashEffect';
 import FilterSelector from '@/components/FilterSelector';
 import Button from '@/components/ui/Button';
-import { Photo } from '@/lib/types';
+import { Photo, LAYOUT_INFO } from '@/lib/types';
 
 export default function PhotoboothPage() {
   const router = useRouter();
@@ -50,6 +50,7 @@ export default function PhotoboothPage() {
     startSession,
     cancelSession,
   } = usePhotoCapture({
+    totalPhotos: LAYOUT_INFO[state.selectedLayout].photoCount,
     captureFrame,
     filter: state.selectedFilter,
     onPhotoCapture,

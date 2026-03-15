@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '@/lib/store';
-import { renderPhotostrip, getTemplateConfig } from '@/lib/photostrip';
+import { renderPhotostrip, getLayoutConfig } from '@/lib/photostrip';
 import StickerEditor from '@/components/StickerEditor';
 import Button from '@/components/ui/Button';
 import PageTransition from '@/components/ui/PageTransition';
@@ -15,13 +15,13 @@ export default function EditorPage() {
   const { state, addSticker, updateSticker, removeSticker, setPhotostrip } = useStore();
   const [previewUrl, setPreviewUrl] = useState<string | null>(state.photostripDataUrl);
 
-  const config = getTemplateConfig(state.selectedTemplate);
+  const config = getLayoutConfig(state.selectedLayout);
 
   const renderPreview = useCallback(async () => {
-    const url = await renderPhotostrip(state.photos, state.selectedTemplate, state.stickers);
+    const url = await renderPhotostrip(state.photos, state.selectedLayout, state.selectedFrameStyle, state.frameColor, state.stickers);
     setPreviewUrl(url);
     setPhotostrip(url);
-  }, [state.photos, state.selectedTemplate, state.stickers, setPhotostrip]);
+  }, [state.photos, state.selectedLayout, state.selectedFrameStyle, state.frameColor, state.stickers, setPhotostrip]);
 
   useEffect(() => {
     if (state.photos.length > 0) {

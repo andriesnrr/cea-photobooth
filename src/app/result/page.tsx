@@ -35,13 +35,13 @@ export default function ResultPage() {
 
   const handleDownload = async () => {
     setIsDownloading(true);
-    await downloadPhotostrip(state.photos, state.selectedTemplate, state.stickers);
+    await downloadPhotostrip(state.photos, state.selectedLayout, state.selectedFrameStyle, state.frameColor, state.stickers);
     setIsDownloading(false);
   };
 
   const handleShare = async () => {
     setIsSharing(true);
-    await sharePhotostrip(state.photos, state.selectedTemplate, state.stickers);
+    await sharePhotostrip(state.photos, state.selectedLayout, state.selectedFrameStyle, state.frameColor, state.stickers);
     setIsSharing(false);
   };
 

@@ -1,12 +1,14 @@
 import { renderPhotostripAsBlob } from './photostrip';
-import { Photo, TemplateType, Sticker } from './types';
+import { Photo, LayoutType, FrameStyle, Sticker } from './types';
 
 export async function downloadPhotostrip(
   photos: Photo[],
-  template: TemplateType,
+  layout: LayoutType,
+  frameStyle: FrameStyle,
+  frameColor: string,
   stickers: Sticker[] = []
 ): Promise<void> {
-  const blob = await renderPhotostripAsBlob(photos, template, stickers);
+  const blob = await renderPhotostripAsBlob(photos, layout, frameStyle, frameColor, stickers);
   if (!blob) return;
 
   const url = URL.createObjectURL(blob);
@@ -21,10 +23,12 @@ export async function downloadPhotostrip(
 
 export async function sharePhotostrip(
   photos: Photo[],
-  template: TemplateType,
+  layout: LayoutType,
+  frameStyle: FrameStyle,
+  frameColor: string,
   stickers: Sticker[] = []
 ): Promise<boolean> {
-  const blob = await renderPhotostripAsBlob(photos, template, stickers);
+  const blob = await renderPhotostripAsBlob(photos, layout, frameStyle, frameColor, stickers);
   if (!blob) return false;
 
   if (navigator.share && navigator.canShare) {
@@ -44,7 +48,7 @@ export async function sharePhotostrip(
   }
 
   // Fallback to download
-  await downloadPhotostrip(photos, template, stickers);
+  await downloadPhotostrip(photos, layout, frameStyle, frameColor, stickers);
   return true;
 }
 

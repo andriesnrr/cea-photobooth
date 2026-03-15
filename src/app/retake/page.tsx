@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useCamera } from '@/hooks/useCamera';
 import { useSound } from '@/hooks/useSound';
 import { useStore } from '@/lib/store';
