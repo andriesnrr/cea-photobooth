@@ -576,37 +576,82 @@ function drawLeaf(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: n
   ctx.restore();
 }
 
-function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  // Golden border
+function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: number, positions: { x: number; y: number; width: number; height: number }[]) {
+  // Golden double border around the whole frame
   ctx.strokeStyle = '#d97706';
-  ctx.lineWidth = 4;
-  drawRoundedRect(ctx, 3, 3, w - 6, h - 6, 14);
+  ctx.lineWidth = 5;
+  drawRoundedRect(ctx, 2, 2, w - 4, h - 4, 14);
   ctx.stroke();
   ctx.strokeStyle = '#fbbf24';
   ctx.lineWidth = 2;
-  drawRoundedRect(ctx, 7, 7, w - 14, h - 14, 12);
+  drawRoundedRect(ctx, 6, 6, w - 12, h - 12, 12);
   ctx.stroke();
 
-  // Large sunflower — bottom-left (like the reference image)
-  drawSunflowerCanvas(ctx, w * 0.18, h - 28, Math.min(w, h) * 0.15);
-  // Smaller sunflower — bottom-left, further left
-  drawSunflowerCanvas(ctx, w * 0.05, h - 15, Math.min(w, h) * 0.09);
-  // Medium sunflower — bottom-right
-  drawSunflowerCanvas(ctx, w * 0.85, h - 22, Math.min(w, h) * 0.11);
-  // Small sunflower — top-right
-  drawSunflowerCanvas(ctx, w - 20, 20, Math.min(w, h) * 0.06);
+  // Golden lines between each photo (the dividers)
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < positions.length - 1; i++) {
+    const curr = positions[i];
+    const next = positions[i + 1];
+    // Horizontal divider line between photos
+    const lineY = curr.y + curr.height + (next.y - (curr.y + curr.height)) / 2;
+    if (Math.abs(curr.x - next.x) < 10) {
+      // Vertical strip — horizontal divider
+      ctx.beginPath();
+      ctx.moveTo(curr.x, lineY);
+      ctx.lineTo(curr.x + curr.width, lineY);
+      ctx.stroke();
+    }
+  }
 
-  // Leaves scattered around the sunflowers
-  drawLeaf(ctx, w * 0.28, h - 18, 20, -0.3);
-  drawLeaf(ctx, w * 0.1, h - 40, 16, 0.8);
-  drawLeaf(ctx, w * 0.78, h - 15, 18, 2.5);
-  drawLeaf(ctx, w * 0.92, h - 35, 14, 1.2);
-  drawLeaf(ctx, w - 35, 15, 12, -0.5);
-  drawLeaf(ctx, w * 0.03, h * 0.5, 15, 0.4);
-  drawLeaf(ctx, w * 0.95, h * 0.4, 14, 2.8);
+  const baseSize = Math.min(w, h) * 0.12;
 
-  // Ribbon bow — top-left (like reference image)
-  drawRibbon(ctx, 30, 22, Math.min(w, h) * 0.08);
+  // ===== Big sunflowers at frame corners =====
+  drawSunflowerCanvas(ctx, 8, 8, baseSize * 0.7);  // top-left
+  drawSunflowerCanvas(ctx, w - 8, 8, baseSize * 0.5); // top-right
+  drawSunflowerCanvas(ctx, 8, h - 25, baseSize * 1.0);  // bottom-left (biggest, like reference)
+  drawSunflowerCanvas(ctx, w * 0.25, h - 15, baseSize * 0.65); // bottom, next to main
+  drawSunflowerCanvas(ctx, w - 8, h - 20, baseSize * 0.8); // bottom-right
+
+  // ===== Sunflowers along photo divider lines =====
+  for (let i = 0; i < positions.length - 1; i++) {
+    const curr = positions[i];
+    const next = positions[i + 1];
+    const gapY = curr.y + curr.height + (next.y - (curr.y + curr.height)) / 2;
+
+    if (Math.abs(curr.x - next.x) < 10) {
+      // Vertical strip — add sunflower on left and right edges of divider line
+      drawSunflowerCanvas(ctx, curr.x - 2, gapY, baseSize * 0.55);
+      drawSunflowerCanvas(ctx, curr.x + curr.width + 2, gapY, baseSize * 0.45);
+      // Small leaf on the line
+      drawLeaf(ctx, curr.x + curr.width * 0.3, gapY, 14, 0.2);
+      drawLeaf(ctx, curr.x + curr.width * 0.7, gapY, 14, 3.0);
+    } else {
+      // Grid layout — add sunflower between columns
+      const gapX = curr.x + curr.width + (next.x - (curr.x + curr.width)) / 2;
+      drawSunflowerCanvas(ctx, gapX, curr.y + curr.height * 0.3, baseSize * 0.4);
+      drawSunflowerCanvas(ctx, gapX, curr.y + curr.height * 0.7, baseSize * 0.35);
+    }
+  }
+
+  // ===== Leaves scattered along edges =====
+  // Left edge
+  for (let y = positions[0].y; y < h - 60; y += h * 0.2) {
+    drawLeaf(ctx, 4, y + 20, 18, 0.4 + Math.sin(y) * 0.3);
+  }
+  // Right edge
+  for (let y = positions[0].y; y < h - 60; y += h * 0.22) {
+    drawLeaf(ctx, w - 4, y + 30, 16, 2.7 + Math.sin(y) * 0.3);
+  }
+  // Top edge
+  drawLeaf(ctx, w * 0.35, 5, 14, 0.3);
+  drawLeaf(ctx, w * 0.65, 5, 14, -0.3);
+  // Bottom
+  drawLeaf(ctx, w * 0.4, h - 10, 16, 3.1);
+  drawLeaf(ctx, w * 0.6, h - 8, 14, 3.3);
+
+  // ===== Ribbon bow — top-left (like reference) =====
+  drawRibbon(ctx, w * 0.12, 15, baseSize * 0.65);
 }
 
 function drawRibbon(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
@@ -1048,7 +1093,7 @@ export async function renderPhotostrip(
     case 'confetti': drawConfettiDecorations(ctx, w, h); break;
     case 'retro': drawRetroDecorations(ctx, w, h); break;
     case 'starry': drawStarryDecorations(ctx, w, h); break;
-    case 'sunflower': drawSunflowerDecorations(ctx, w, h); break;
+    case 'sunflower': drawSunflowerDecorations(ctx, w, h, photoPositions); break;
     case 'garden': drawGardenDecorations(ctx, w, h); break;
     case 'lace': drawLaceDecorations(ctx, w, h); break;
     case 'clean': drawCleanDecorations(ctx, w, h); break;
