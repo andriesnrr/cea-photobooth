@@ -8,7 +8,7 @@ interface FrameStyleSelectorProps {
   onSelect: (style: FrameStyle) => void;
 }
 
-const styles: FrameStyle[] = ['clean', 'floral', 'hearts', 'pastel', 'filmstrip', 'kawaii', 'doodle', 'sparkle', 'sakura', 'confetti', 'retro', 'starry'];
+const styles: FrameStyle[] = ['clean', 'floral', 'hearts', 'pastel', 'filmstrip', 'kawaii', 'doodle', 'sparkle', 'sakura', 'confetti', 'retro', 'starry', 'sunflower', 'garden', 'lace'];
 
 export default function FrameStyleSelector({ selected, onSelect }: FrameStyleSelectorProps) {
   return (

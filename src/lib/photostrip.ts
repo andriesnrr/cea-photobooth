@@ -491,6 +491,332 @@ function drawStarryDecorations(ctx: CanvasRenderingContext2D, w: number, h: numb
   ctx.setLineDash([]);
 }
 
+// ====== REALISTIC Canvas-Drawn Frame Styles ======
+
+function drawSunflowerCanvas(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
+  // Petals — two layers for depth
+  const petalCount = 14;
+  for (let layer = 0; layer < 2; layer++) {
+    const layerSize = layer === 0 ? size : size * 0.75;
+    const angleOffset = layer === 0 ? 0 : Math.PI / petalCount;
+    for (let i = 0; i < petalCount; i++) {
+      const angle = (i / petalCount) * Math.PI * 2 + angleOffset;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      // Petal shape — elongated ellipse
+      ctx.beginPath();
+      ctx.ellipse(0, -layerSize * 0.55, layerSize * 0.18, layerSize * 0.45, 0, 0, Math.PI * 2);
+      // Gradient fill for each petal
+      const petalGrad = ctx.createRadialGradient(0, -layerSize * 0.4, 0, 0, -layerSize * 0.4, layerSize * 0.5);
+      if (layer === 0) {
+        petalGrad.addColorStop(0, '#fbbf24');
+        petalGrad.addColorStop(0.6, '#f59e0b');
+        petalGrad.addColorStop(1, '#d97706');
+      } else {
+        petalGrad.addColorStop(0, '#fcd34d');
+        petalGrad.addColorStop(0.6, '#fbbf24');
+        petalGrad.addColorStop(1, '#f59e0b');
+      }
+      ctx.fillStyle = petalGrad;
+      ctx.fill();
+      // Petal outline
+      ctx.strokeStyle = 'rgba(180, 120, 20, 0.3)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+  // Center circle — brown with seed texture
+  const centerR = size * 0.28;
+  const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, centerR);
+  centerGrad.addColorStop(0, '#78350f');
+  centerGrad.addColorStop(0.5, '#92400e');
+  centerGrad.addColorStop(1, '#451a03');
+  ctx.beginPath();
+  ctx.arc(cx, cy, centerR, 0, Math.PI * 2);
+  ctx.fillStyle = centerGrad;
+  ctx.fill();
+  // Seed dots
+  ctx.fillStyle = '#fbbf24';
+  for (let ring = 1; ring <= 3; ring++) {
+    const r = (ring / 4) * centerR;
+    const dotCount = ring * 6;
+    for (let d = 0; d < dotCount; d++) {
+      const a = (d / dotCount) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+function drawLeaf(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, angle: number) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  // Leaf shape
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(size * 0.3, -size * 0.4, size * 0.8, -size * 0.2, size, 0);
+  ctx.bezierCurveTo(size * 0.8, size * 0.2, size * 0.3, size * 0.4, 0, 0);
+  const leafGrad = ctx.createLinearGradient(0, 0, size, 0);
+  leafGrad.addColorStop(0, '#16a34a');
+  leafGrad.addColorStop(0.5, '#22c55e');
+  leafGrad.addColorStop(1, '#15803d');
+  ctx.fillStyle = leafGrad;
+  ctx.fill();
+  // Center vein
+  ctx.beginPath();
+  ctx.moveTo(size * 0.1, 0);
+  ctx.lineTo(size * 0.85, 0);
+  ctx.strokeStyle = 'rgba(21, 128, 61, 0.5)';
+  ctx.lineWidth = 0.8;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  // Golden border
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth = 4;
+  drawRoundedRect(ctx, 3, 3, w - 6, h - 6, 14);
+  ctx.stroke();
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 2;
+  drawRoundedRect(ctx, 7, 7, w - 14, h - 14, 12);
+  ctx.stroke();
+
+  // Large sunflower — bottom-left (like the reference image)
+  drawSunflowerCanvas(ctx, w * 0.18, h - 28, Math.min(w, h) * 0.15);
+  // Smaller sunflower — bottom-left, further left
+  drawSunflowerCanvas(ctx, w * 0.05, h - 15, Math.min(w, h) * 0.09);
+  // Medium sunflower — bottom-right
+  drawSunflowerCanvas(ctx, w * 0.85, h - 22, Math.min(w, h) * 0.11);
+  // Small sunflower — top-right
+  drawSunflowerCanvas(ctx, w - 20, 20, Math.min(w, h) * 0.06);
+
+  // Leaves scattered around the sunflowers
+  drawLeaf(ctx, w * 0.28, h - 18, 20, -0.3);
+  drawLeaf(ctx, w * 0.1, h - 40, 16, 0.8);
+  drawLeaf(ctx, w * 0.78, h - 15, 18, 2.5);
+  drawLeaf(ctx, w * 0.92, h - 35, 14, 1.2);
+  drawLeaf(ctx, w - 35, 15, 12, -0.5);
+  drawLeaf(ctx, w * 0.03, h * 0.5, 15, 0.4);
+  drawLeaf(ctx, w * 0.95, h * 0.4, 14, 2.8);
+
+  // Ribbon bow — top-left (like reference image)
+  drawRibbon(ctx, 30, 22, Math.min(w, h) * 0.08);
+}
+
+function drawRibbon(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
+  // Left loop
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.bezierCurveTo(cx - size, cy - size * 0.6, cx - size * 1.2, cy + size * 0.3, cx, cy);
+  ctx.fillStyle = '#d4a574';
+  ctx.fill();
+  ctx.strokeStyle = '#b8956a';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Right loop
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.bezierCurveTo(cx + size, cy - size * 0.6, cx + size * 1.2, cy + size * 0.3, cx, cy);
+  ctx.fillStyle = '#c9a06c';
+  ctx.fill();
+  ctx.stroke();
+  // Center knot
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, size * 0.15, size * 0.2, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#b8956a';
+  ctx.fill();
+  // Tails
+  ctx.beginPath();
+  ctx.moveTo(cx - size * 0.1, cy + size * 0.15);
+  ctx.bezierCurveTo(cx - size * 0.3, cy + size * 0.8, cx - size * 0.15, cy + size, cx - size * 0.35, cy + size * 1.1);
+  ctx.strokeStyle = '#c9a06c';
+  ctx.lineWidth = size * 0.12;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + size * 0.1, cy + size * 0.15);
+  ctx.bezierCurveTo(cx + size * 0.3, cy + size * 0.8, cx + size * 0.15, cy + size, cx + size * 0.35, cy + size * 1.1);
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+}
+
+function drawRoseCanvas(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number, color: string) {
+  // Layered petals for a rose
+  const petalLayers = [5, 7, 9];
+  const colors = color === 'pink'
+    ? ['#fda4af', '#fb7185', '#f43f5e']
+    : color === 'red'
+    ? ['#fca5a5', '#f87171', '#ef4444']
+    : ['#fef3c7', '#fde68a', '#fbbf24'];
+
+  petalLayers.forEach((count, layer) => {
+    const r = size * (1 - layer * 0.25);
+    const angleOffset = layer * 0.3;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + angleOffset;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.ellipse(0, -r * 0.4, r * 0.25, r * 0.35, 0, 0, Math.PI * 2);
+      ctx.fillStyle = colors[layer];
+      ctx.globalAlpha = 0.85;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+  });
+  // Center
+  ctx.beginPath();
+  ctx.arc(cx, cy, size * 0.12, 0, Math.PI * 2);
+  ctx.fillStyle = colors[2];
+  ctx.fill();
+}
+
+function drawVine(ctx: CanvasRenderingContext2D, startX: number, startY: number, endX: number, endY: number, leafSide: number) {
+  // Curved vine stem
+  const midX = (startX + endX) / 2 + leafSide * 8;
+  const midY = (startY + endY) / 2;
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  ctx.quadraticCurveTo(midX, midY, endX, endY);
+  ctx.strokeStyle = '#16a34a';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Small leaves along vine
+  const steps = 4;
+  for (let i = 1; i < steps; i++) {
+    const t = i / steps;
+    const x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
+    const y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+    drawLeaf(ctx, x, y, 10, leafSide * (0.5 + i * 0.3));
+  }
+}
+
+function drawGardenDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  // Vine border — left side
+  drawVine(ctx, 8, 10, 8, h * 0.3, 1);
+  drawVine(ctx, 8, h * 0.3, 8, h * 0.6, -1);
+  drawVine(ctx, 8, h * 0.6, 8, h * 0.9, 1);
+  // Vine border — right side
+  drawVine(ctx, w - 8, 10, w - 8, h * 0.3, -1);
+  drawVine(ctx, w - 8, h * 0.3, w - 8, h * 0.6, 1);
+  drawVine(ctx, w - 8, h * 0.6, w - 8, h * 0.9, -1);
+  // Top vine
+  drawVine(ctx, 15, 8, w * 0.4, 8, 1);
+  drawVine(ctx, w * 0.6, 8, w - 15, 8, -1);
+  // Bottom vine
+  drawVine(ctx, 15, h - 8, w * 0.4, h - 8, -1);
+  drawVine(ctx, w * 0.6, h - 8, w - 15, h - 8, 1);
+
+  // Roses at corners and edges
+  drawRoseCanvas(ctx, 15, 15, 14, 'pink');
+  drawRoseCanvas(ctx, w - 15, 15, 12, 'red');
+  drawRoseCanvas(ctx, 15, h - 15, 12, 'pink');
+  drawRoseCanvas(ctx, w - 15, h - 15, 14, 'red');
+  // Mid-edge roses
+  drawRoseCanvas(ctx, 12, h * 0.5, 10, 'yellow');
+  drawRoseCanvas(ctx, w - 12, h * 0.5, 10, 'pink');
+  drawRoseCanvas(ctx, w / 2, 12, 10, 'red');
+  drawRoseCanvas(ctx, w / 2, h - 12, 10, 'yellow');
+
+  // Extra scattered leaves
+  drawLeaf(ctx, w * 0.3, 5, 10, 0.2);
+  drawLeaf(ctx, w * 0.7, h - 5, 10, 3.0);
+}
+
+function drawLaceDecorations(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.strokeStyle = 'rgba(180, 160, 140, 0.25)';
+  ctx.fillStyle = 'rgba(180, 160, 140, 0.06)';
+
+  // Doily corner ornaments
+  const doilyCorners = [
+    { x: 0, y: 0 }, { x: w, y: 0 },
+    { x: 0, y: h }, { x: w, y: h },
+  ];
+  doilyCorners.forEach(({ x, y }) => {
+    const r = Math.min(w, h) * 0.1;
+    // Scallop ring
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.arc(
+        x + Math.cos(angle) * r * 0.65,
+        y + Math.sin(angle) * r * 0.65,
+        r * 0.25, 0, Math.PI * 2
+      );
+      ctx.fill();
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+    // Center circle
+    ctx.beginPath();
+    ctx.arc(x, y, r * 0.35, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(180, 160, 140, 0.08)';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(180, 160, 140, 0.06)';
+  });
+
+  // Scalloped border
+  const scallSize = 12;
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(180, 160, 140, 0.2)';
+  // Top
+  for (let x = scallSize; x < w - scallSize; x += scallSize * 2) {
+    ctx.beginPath();
+    ctx.arc(x + scallSize, 6, scallSize, Math.PI, 0);
+    ctx.stroke();
+  }
+  // Bottom
+  for (let x = scallSize; x < w - scallSize; x += scallSize * 2) {
+    ctx.beginPath();
+    ctx.arc(x + scallSize, h - 6, scallSize, 0, Math.PI);
+    ctx.stroke();
+  }
+  // Left
+  for (let y = scallSize; y < h - scallSize; y += scallSize * 2) {
+    ctx.beginPath();
+    ctx.arc(6, y + scallSize, scallSize, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.stroke();
+  }
+  // Right
+  for (let y = scallSize; y < h - scallSize; y += scallSize * 2) {
+    ctx.beginPath();
+    ctx.arc(w - 6, y + scallSize, scallSize, Math.PI * 1.5, Math.PI * 0.5);
+    ctx.stroke();
+  }
+
+  // Cross-stitch dots pattern (subtle)
+  ctx.fillStyle = 'rgba(180, 160, 140, 0.08)';
+  for (let x = 20; x < w - 20; x += 30) {
+    for (let y = 20; y < h - 20; y += 30) {
+      // tiny X
+      ctx.strokeStyle = 'rgba(180, 160, 140, 0.1)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x - 2, y - 2); ctx.lineTo(x + 2, y + 2);
+      ctx.moveTo(x + 2, y - 2); ctx.lineTo(x - 2, y + 2);
+      ctx.stroke();
+    }
+  }
+
+  // Inner frame line — double
+  ctx.strokeStyle = 'rgba(180, 160, 140, 0.15)';
+  ctx.lineWidth = 1;
+  drawRoundedRect(ctx, 14, 14, w - 28, h - 28, 10);
+  ctx.stroke();
+  drawRoundedRect(ctx, 18, 18, w - 36, h - 36, 8);
+  ctx.stroke();
+}
+
 // ====== Background rendering per frame style ======
 
 function drawFrameBackground(ctx: CanvasRenderingContext2D, style: FrameStyle, w: number, h: number, baseColor: string) {
@@ -578,6 +904,30 @@ function drawFrameBackground(ctx: CanvasRenderingContext2D, style: FrameStyle, w
       grad.addColorStop(0.5, 'rgba(49, 46, 129, 0.04)');
       grad.addColorStop(1, 'rgba(30, 41, 59, 0.06)');
       ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'sunflower': {
+      // Warm golden background
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(254, 249, 195, 0.35)');
+      grad.addColorStop(0.5, 'rgba(254, 243, 199, 0.2)');
+      grad.addColorStop(1, 'rgba(253, 230, 138, 0.3)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'garden': {
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(220, 252, 231, 0.3)');
+      grad.addColorStop(0.5, 'rgba(254, 249, 195, 0.15)');
+      grad.addColorStop(1, 'rgba(252, 231, 243, 0.25)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+      break;
+    }
+    case 'lace': {
+      ctx.fillStyle = 'rgba(245, 240, 235, 0.3)';
       ctx.fillRect(0, 0, w, h);
       break;
     }
@@ -698,6 +1048,9 @@ export async function renderPhotostrip(
     case 'confetti': drawConfettiDecorations(ctx, w, h); break;
     case 'retro': drawRetroDecorations(ctx, w, h); break;
     case 'starry': drawStarryDecorations(ctx, w, h); break;
+    case 'sunflower': drawSunflowerDecorations(ctx, w, h); break;
+    case 'garden': drawGardenDecorations(ctx, w, h); break;
+    case 'lace': drawLaceDecorations(ctx, w, h); break;
     case 'clean': drawCleanDecorations(ctx, w, h); break;
   }
 

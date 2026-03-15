@@ -31,7 +31,7 @@ export type StickerType =
 export type LayoutType = 'strip-4' | 'strip-3' | 'strip-2' | 'grid-2x2' | 'grid-3x2' | 'story' | 'polaroid' | 'wide' | 'tall-2';
 
 // Frame Style = DECORATION/DESIGN (how it looks)
-export type FrameStyle = 'clean' | 'floral' | 'hearts' | 'pastel' | 'filmstrip' | 'kawaii' | 'doodle' | 'sparkle' | 'sakura' | 'confetti' | 'retro' | 'starry';
+export type FrameStyle = 'clean' | 'floral' | 'hearts' | 'pastel' | 'filmstrip' | 'kawaii' | 'doodle' | 'sparkle' | 'sakura' | 'confetti' | 'retro' | 'starry' | 'sunflower' | 'garden' | 'lace';
 
 // Legacy TemplateType for backward compat
 export type TemplateType = 'classic' | 'polaroid' | 'grid' | 'floral' | 'story' | 'hearts' | 'pastel' | 'filmstrip' | 'cute';
@@ -125,6 +125,9 @@ export const FRAME_STYLE_INFO: Record<FrameStyle, { label: string; icon: string;
   'confetti': { label: 'Party', icon: '🎉', desc: 'Confetti' },
   'retro': { label: 'Retro', icon: '📺', desc: 'Vintage' },
   'starry': { label: 'Starry', icon: '🌟', desc: 'Night sky' },
+  'sunflower': { label: 'Sunflower', icon: '🌻', desc: 'Big blooms' },
+  'garden': { label: 'Garden', icon: '🌿', desc: 'Vine & roses' },
+  'lace': { label: 'Lace', icon: '🪡', desc: 'Vintage doily' },
 };
 
 // Frame color presets — expanded with more cute colors
