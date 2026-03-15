@@ -639,7 +639,7 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
   // ===== Top — ribbon + small sunflower on the border =====
   const topSz = med * 0.7;
   const ribbonSize = big * 0.5;
-  drawRibbon(ctx, w * 0.14, ribbonSize * 0.7 + 4, ribbonSize);
+  drawRibbon(ctx, w * 0.10, ribbonSize * 0.6 + 2, ribbonSize);
   drawSunflowerCanvas(ctx, w - topSz - 5, topSz + 4, topSz);
   drawLeaf(ctx, w - topSz - 20, 6, 14, 2.8);
 }
