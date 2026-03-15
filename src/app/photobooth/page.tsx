@@ -79,7 +79,7 @@ export default function PhotoboothPage() {
   return (
     <div className="min-h-dvh bg-black flex flex-col landscape:flex-row relative overflow-hidden">
       {/* Camera viewport */}
-      <div className="flex-1 relative overflow-hidden">
+      <div className="flex-1 relative overflow-hidden min-h-0">
         {/* Decorative frame border */}
         <div className="absolute inset-0 z-20 pointer-events-none"
           style={{
@@ -88,13 +88,13 @@ export default function PhotoboothPage() {
           }}
         />
 
-        {/* Video */}
+        {/* Video — absolute fill to avoid black bars */}
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className={`w-full h-full object-cover ${currentFacingMode === 'user' ? 'mirror' : ''} ${filterClass}`}
+          className={`absolute inset-0 w-full h-full object-cover ${currentFacingMode === 'user' ? 'mirror' : ''} ${filterClass}`}
         />
 
         {/* Frozen frame overlay */}

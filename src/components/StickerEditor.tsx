@@ -29,8 +29,8 @@ export default function StickerEditor({
     const newSticker: Sticker = {
       id: `sticker-${Date.now()}`,
       type,
-      x: canvasWidth / 2,
-      y: canvasHeight / 2,
+      x: canvasWidth / 2 + (Math.random() - 0.5) * 100,
+      y: canvasHeight / 2 + (Math.random() - 0.5) * 100,
       scale: 1,
       rotation: 0,
     };
@@ -38,8 +38,8 @@ export default function StickerEditor({
     setSelectedSticker(newSticker.id);
   }, [canvasWidth, canvasHeight, onAddSticker]);
 
-  const handleDragEnd = useCallback(
-    (stickerId: string, info: { point: { x: number; y: number } }) => {
+  const handleDrag = useCallback(
+    (stickerId: string, deltaX: number, deltaY: number) => {
       const container = containerRef.current;
       if (!container) return;
 
@@ -49,14 +49,11 @@ export default function StickerEditor({
 
       const scaleX = canvasWidth / rect.width;
       const scaleY = canvasHeight / rect.height;
-      
-      const x = (info.point.x - rect.left) * scaleX;
-      const y = (info.point.y - rect.top) * scaleY;
 
       onUpdateSticker({
         ...sticker,
-        x: Math.max(0, Math.min(canvasWidth, x)),
-        y: Math.max(0, Math.min(canvasHeight, y)),
+        x: Math.max(0, Math.min(canvasWidth, sticker.x + deltaX * scaleX)),
+        y: Math.max(0, Math.min(canvasHeight, sticker.y + deltaY * scaleY)),
       });
     },
     [stickers, canvasWidth, canvasHeight, onUpdateSticker]
@@ -65,12 +62,11 @@ export default function StickerEditor({
   const currentCategory = STICKER_CATEGORIES[activeCategory];
 
   return (
-    <div className="relative w-full">
-      {/* Canvas overlay for placed stickers */}
+    <div className="w-full">
+      {/* Sticker overlay — positioned over the photostrip image */}
       <div
         ref={containerRef}
         className="absolute inset-0 z-10"
-        style={{ aspectRatio: `${canvasWidth}/${canvasHeight}` }}
       >
         <AnimatePresence>
           {stickers.map((sticker) => {
@@ -82,7 +78,7 @@ export default function StickerEditor({
             return (
               <motion.div
                 key={sticker.id}
-                className={`absolute cursor-grab active:cursor-grabbing z-20 select-none
+                className={`absolute cursor-grab active:cursor-grabbing z-20 select-none touch-none
                   ${selectedSticker === sticker.id ? 'ring-2 ring-rose-400 rounded-full' : ''}`}
                 style={{
                   left: sticker.x * scaleX - 18,
@@ -95,10 +91,10 @@ export default function StickerEditor({
                 exit={{ scale: 0, opacity: 0 }}
                 drag
                 dragMomentum={false}
-                onDragStart={() => {
-                  setSelectedSticker(sticker.id);
+                dragElastic={0}
+                onDrag={(_, info) => {
+                  handleDrag(sticker.id, info.delta.x, info.delta.y);
                 }}
-                onDragEnd={(_, info) => handleDragEnd(sticker.id, info)}
                 onClick={() => setSelectedSticker(
                   selectedSticker === sticker.id ? null : sticker.id
                 )}
@@ -122,10 +118,10 @@ export default function StickerEditor({
         </AnimatePresence>
       </div>
 
-      {/* Sticker palette with categories */}
-      <div className="mt-4 space-y-2">
+      {/* Sticker palette with categories — OUTSIDE the overlay */}
+      <div className="relative z-30 mt-4 space-y-2">
         {/* Category tabs */}
-        <div className="flex gap-1.5 justify-center">
+        <div className="flex gap-1.5 justify-center flex-wrap">
           {STICKER_CATEGORIES.map((cat, i) => (
             <motion.button
               key={cat.name}
@@ -151,7 +147,7 @@ export default function StickerEditor({
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.85 }}
               onClick={() => handleAddSticker(type)}
-              className="w-11 h-11 rounded-xl glass flex items-center justify-center text-2xl cursor-pointer hover:shadow-lg transition-shadow"
+              className="w-11 h-11 rounded-xl glass flex items-center justify-center text-2xl cursor-pointer hover:shadow-lg transition-shadow active:bg-rose-50"
             >
               {STICKER_EMOJIS[type]}
             </motion.button>
