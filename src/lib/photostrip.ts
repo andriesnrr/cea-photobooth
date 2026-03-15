@@ -604,6 +604,8 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
 
   const big = w * 0.16;
   const med = w * 0.12;
+  const inL = med + 5;     // left offset so flower isn't clipped
+  const inR = w - med - 5; // right offset
 
   // ===== Alternating LEFT-RIGHT sunflowers at each divider =====
   for (let i = 0; i < positions.length - 1; i++) {
@@ -612,15 +614,14 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
     const gapY = curr.y + curr.height + (next.y - (curr.y + curr.height)) / 2;
 
     if (Math.abs(curr.x - next.x) < 10) {
-      // Alternate: even = left side, odd = right side
       if (i % 2 === 0) {
-        drawSunflowerCanvas(ctx, 5, gapY, med);
-        drawLeaf(ctx, 5, gapY - med * 0.9, 16, 0.5);
-        drawLeaf(ctx, 5, gapY + med * 0.9, 16, -0.4);
+        drawSunflowerCanvas(ctx, inL, gapY, med);
+        drawLeaf(ctx, inL + med * 0.7, gapY - med * 0.6, 16, 0.5);
+        drawLeaf(ctx, inL + med * 0.7, gapY + med * 0.6, 16, -0.4);
       } else {
-        drawSunflowerCanvas(ctx, w - 5, gapY, med);
-        drawLeaf(ctx, w - 5, gapY - med * 0.9, 16, 2.6);
-        drawLeaf(ctx, w - 5, gapY + med * 0.9, 16, 3.5);
+        drawSunflowerCanvas(ctx, inR, gapY, med);
+        drawLeaf(ctx, inR - med * 0.7, gapY - med * 0.6, 16, 2.6);
+        drawLeaf(ctx, inR - med * 0.7, gapY + med * 0.6, 16, 3.5);
       }
     } else {
       const gapX = curr.x + curr.width + (next.x - (curr.x + curr.width)) / 2;
@@ -628,17 +629,19 @@ function drawSunflowerDecorations(ctx: CanvasRenderingContext2D, w: number, h: n
     }
   }
 
-  // ===== Bottom — 3 balanced sunflowers =====
-  drawSunflowerCanvas(ctx, w * 0.12, h - 10, big);
-  drawSunflowerCanvas(ctx, w * 0.50, h - 8, med);
-  drawSunflowerCanvas(ctx, w * 0.88, h - 10, big);
-  drawLeaf(ctx, w * 0.28, h - 18, 18, 0.4);
-  drawLeaf(ctx, w * 0.72, h - 18, 18, 2.7);
+  // ===== Bottom — 3 balanced sunflowers (moved up so not clipped) =====
+  const botY = h - big - 5;
+  drawSunflowerCanvas(ctx, w * 0.15, botY, big);
+  drawSunflowerCanvas(ctx, w * 0.50, botY + 4, med);
+  drawSunflowerCanvas(ctx, w * 0.85, botY, big);
+  drawLeaf(ctx, w * 0.30, botY, 18, 0.4);
+  drawLeaf(ctx, w * 0.70, botY, 18, 2.7);
 
   // ===== Top — ribbon + small sunflower =====
-  drawRibbon(ctx, w * 0.12, 16, big * 0.4);
-  drawSunflowerCanvas(ctx, w * 0.88, 10, med * 0.7);
-  drawLeaf(ctx, w * 0.75, 8, 14, 2.8);
+  const topSz = med * 0.7;
+  drawRibbon(ctx, w * 0.14, topSz + 5, big * 0.35);
+  drawSunflowerCanvas(ctx, w - topSz - 5, topSz + 5, topSz);
+  drawLeaf(ctx, w - topSz - 20, topSz - 2, 14, 2.8);
 }
 
 function drawRibbon(ctx: CanvasRenderingContext2D, cx: number, cy: number, size: number) {
